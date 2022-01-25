@@ -91,7 +91,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
         let player = <Player key={this.playerId} top={rect.top + 25} left={rect.left + 25} initialPosition={0} ref={el => this.playerRefs.push(el)}/>
         this.playerId += 1;
         this.setState({players: [...this.state.players, player]}, () => {
-            this.setState({current: this.state.current})
+            this.setState({current: (this.state.current) ? this.state.current : 0})
         })
     }
 
