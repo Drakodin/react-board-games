@@ -1,0 +1,28 @@
+.board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.board-root {
+    display: grid;
+}
+
+.dice-container {
+    position: absolute;
+    z-index: 1;
+    top: 27.5%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 250px
+}
+
+.dice-hitbox:hover {
+    cursor: pointer;
+}
+
+.space-divider {
+    height: 100px;
+}
