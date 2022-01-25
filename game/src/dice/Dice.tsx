@@ -2,13 +2,14 @@ import React from 'react';
 import './dice.css';
 
 interface IDSixProps {
-    id: number
+    id: number // A unique ID relative to all other D6.
 }
 
 interface IDSixState {
-    face: number;
+    face: number; // The face that is displayed on top of the D6.
 }
 
+// Classes associated with the D6 that change its orientation
 const classMap = {
     1: 'one-top',
     2: 'two-top',
@@ -27,6 +28,11 @@ export class DSix extends React.Component<IDSixProps, IDSixState> {
         }
     }
 
+    /**
+     * Asynchornous function (written so that it can be waited for) that randomly
+     * picks a  number between 1 and 6, sets it to the face up, and adjusts the
+     * styles accordingly.
+     */
     async roll() {
         let face = Math.floor(Math.random() * 6) + 1;
         this.setState({face: face}, () => {

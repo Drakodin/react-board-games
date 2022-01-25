@@ -28,12 +28,24 @@ export class Tile extends React.Component<ITile, ITileState> {
         }
     }
 
+    /**
+     * An EventListener-like function only called when a player reaches this
+     * Tile. The function will take the associated event function and have
+     * the player execute it within their own state.
+     * 
+     * @param player A reference to the player. Refs are initially undefined
+     * but this function will fire when the ref is defined. However, the type
+     * of the ref is complicated so instead this parameter is marked as "any"
+     */
     onPlayerLand = (player: any) => {
         this.setState({player: true}, () => {
             player.accept(tileRules[this.props.tileValue]);
         });
     }
 
+    /**
+     * Sets whether or not there is a player/players on the Tile to false.
+     */
     onPlayerLeave = () => {
         this.setState({player: false});
     }

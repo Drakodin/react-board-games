@@ -1,3 +1,4 @@
+// Declare your boards here! Follow the format so they can be used.
 export const SIMPLE_BOARD = {
     board1D: [
         1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1

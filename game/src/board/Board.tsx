@@ -2,23 +2,23 @@ import React from 'react';
 import Player from '../player/Player';
 import { Tile } from './tile/BoardTile';
 import { DSix } from '../dice/Dice';
-import ReactDOMServer from 'react-dom/server';
 import './board.css';
 
 interface BoardProps {
-    board: number[],
-    width: number,
-    path: number[]
+    board: number[], // A 1D array containing the board's value-event data
+    width: number, // The number of columns in the board. This impacts board rendering
+    path: number[] // The indices of valid path blocks (anything with value > 0)
 }
 
 interface BoardState {
-    players: JSX.Element[]
-    current: any
-    path: number[]
-    tiles: JSX.Element[],
+    players: JSX.Element[] // All player elements. These are not class references.
+    current: any // The id number of the player who gets to move.
+    tiles: JSX.Element[], // All tile elements. These are not class references.
 }
 
 export default class Board extends React.Component<BoardProps, BoardState> {
+    // References to tiles, dice, and players stored as properties
+    // State updates async so in order for sync, they must be separate
     tileRefs: any[] = [];
     diceRefs: any[] = [];
     playerRefs: any[] = [];
@@ -28,14 +28,14 @@ export default class Board extends React.Component<BoardProps, BoardState> {
         this.state = {
             players: [],
             current: undefined,
-            path: [],
             tiles: [],
         }
+        // Binding functions to class to prevent global this errors
         this.rollDice = this.rollDice.bind(this);
         this.addPlayer = this.addPlayer.bind(this);
     }
     componentDidMount() {
-        // Determine path loop, default top-left valid square
+        // Create tiles based on incoming 1D board data
         let tiles = this.props.board.map(
             (v, i) => <Tile
                         tileValue={v}
@@ -44,9 +44,21 @@ export default class Board extends React.Component<BoardProps, BoardState> {
                         id={`Tile:${Math.floor(i / this.props.width)}-${i % this.props.width}`}
                     />
         );
-        this.setState({tiles: tiles, path: this.props.path});
+        this.setState({tiles: tiles});
     }
 
+    /**
+     * Asynchronous function to roll dice. Allows for waiting for the dice to completely roll
+     * (setting their state) before executing player movement. Players are moved along the path
+     * by the value on the die.
+     * 
+     * There are two positions used here: index in the path array and the actual index along
+     * all tiles. These numbers are different. Index in the path array is used to determine
+     * which valid path space the player should be on next. The index among all tiles
+     * is used to calculate how to place the player on said tile.
+     * 
+     * After a player has moved and the tile event has been fired, the next player's turn will start
+     */
     async rollDice() {
         await this.diceRefs[0].roll();
 
@@ -66,6 +78,12 @@ export default class Board extends React.Component<BoardProps, BoardState> {
         }
     }
 
+    /**
+     * Adds a player to the active Board and places them on the defined start location.
+     * 
+     * An increase in players means each player gets a turn, but whoever currently has
+     * the turn will not lose it.
+     */
     async addPlayer() {
         let initPosId = this.tileRefs[0].props.id;
         let actTile = document.getElementById(initPosId) as HTMLDivElement;
@@ -73,7 +91,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
         let player = <Player key={this.playerId} top={rect.top + 25} left={rect.left + 25} initialPosition={0} ref={el => this.playerRefs.push(el)}/>
         this.playerId += 1;
         this.setState({players: [...this.state.players, player]}, () => {
-            this.setState({current: 0})
+            this.setState({current: this.state.current})
         })
     }
 
